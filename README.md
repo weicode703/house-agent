@@ -6,7 +6,7 @@
 
 ## 在线演示
 
-- 页面展示：[http://your-server-ip-or-domain:5500/static/house.html](http://your-server-ip-or-domain:5500/static/house.html)
+- 页面展示：[http://124.222.39.126:5500/static/house.html](http://124.222.39.126:5500/static/house.html)
 
 ## 功能亮点
 

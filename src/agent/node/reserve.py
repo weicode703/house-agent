@@ -38,6 +38,8 @@ def _title_exists_in_history(state: dict[str, Any], title: str) -> bool:
         return False
 
     for message in state["messages"]:
+        if not isinstance(message, AIMessage) or message.tool_calls:
+            continue
         content = getattr(message, "content", "")
         if isinstance(content, list):
             text = "".join(str(part) for part in content)

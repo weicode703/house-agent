@@ -1,0 +1,29 @@
+services:
+  house-mysql:
+    image: mysql:8.0
+    container_name: house-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      MYSQL_DATABASE: ${DB_NAME:?DB_NAME is required}
+    ports:
+      - "127.0.0.1:3307:3306"
+    volumes:
+      - house_mysql_data:/var/lib/mysql
+      - ./house-mysql.sql:/docker-entrypoint-initdb.d/10-house-mysql.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  house-backend:
+    environment:
+      DB_HOST: house-mysql
+      DB_PORT: "3306"
+    depends_on:
+      house-mysql:
+        condition: service_healthy
+
+volumes:
+  house_mysql_data:

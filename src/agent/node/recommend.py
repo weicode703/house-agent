@@ -119,8 +119,17 @@ def _apply_defaults_for_missing_info(state: dict[str, Any]) -> None:
         state["budget_min"] = 500.0
     if state.get("budget_max") is None:
         state["budget_max"] = 5000.0
-    if not state.get("room_count"):
-        state["room_count"] = 3
+    state["room_count"] = _normalize_room_count(state.get("room_count"))
+
+
+def _normalize_room_count(value: Any) -> int:
+    try:
+        count = int(value)
+    except (TypeError, ValueError):
+        return 5
+    if count < 1:
+        return 5
+    return min(count, 20)
 
 
 def _normalize_budget_info(latest_text: str, updated_state: dict[str, Any]) -> None:
@@ -294,6 +303,7 @@ def collect_user_info(
             ],
         }
 
+    updated_state["room_count"] = _normalize_room_count(updated_state.get("room_count"))
     _persist_budget_preferences(updated_state, runtime, store)
     updated_state["messages"] = [HumanMessage(content=get_recommend_info(updated_state))]
     return updated_state
@@ -337,16 +347,27 @@ def call_get_schema(state: RecommendState) -> dict[str, list[Any]]:
 
 
 def generate_query(state: RecommendState) -> dict[str, list[Any]]:
+    room_count = _normalize_room_count(state.get("room_count"))
     system_prompt = SystemMessage(
         content=(
             "你是一个与 SQL 数据库交互的租房助手。"
             "请根据用户需求生成语法正确的 SQL 查询。"
             "除非用户明确指定数量，否则最多返回 {top_k} 条结果。"
             "不要执行 INSERT、UPDATE、DELETE、DROP 等写操作。"
-        ).format(top_k=state.get("room_count", 5))
+        ).format(top_k=room_count)
     )
     llm_with_tools = model.bind_tools([run_query_tool])
     return {"messages": [llm_with_tools.invoke([system_prompt] + state["messages"])]}
+
+
+def _enforce_query_limit(query: str, limit: int) -> str:
+    query = query.strip().rstrip(";").rstrip()
+    query = re.sub(
+        r"(?is)\s+LIMIT\s+(?:\d+\s*,\s*)?\d+(?:\s+OFFSET\s+\d+)?\s*$",
+        "",
+        query,
+    )
+    return f"{query} LIMIT {_normalize_room_count(limit)}"
 
 
 def check_query(state: RecommendState) -> dict[str, list[Any]]:
@@ -363,4 +384,9 @@ def check_query(state: RecommendState) -> dict[str, list[Any]]:
     llm_with_tools = model.bind_tools([run_query_tool], tool_choice="any")
     response = llm_with_tools.invoke([system_message, user_message])
     response.id = state["messages"][-1].id
+    if response.tool_calls:
+        response.tool_calls[0]["args"]["query"] = _enforce_query_limit(
+            response.tool_calls[0]["args"]["query"],
+            state.get("room_count"),
+        )
     return {"messages": [response]}

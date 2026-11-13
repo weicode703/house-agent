@@ -72,8 +72,12 @@ def need_reserve(state: State) -> NeedReserveOutput:
         "如果不需要，请回复“不需要”。\n"
         "如果需要，请回复“需要”。"
     )
-    answer = interrupt(prompt)
-    return {"reserve": str(answer).strip()}
+    answer = str(interrupt(prompt) or "").strip()
+    if answer in {"不需要", "不用", "不预约", "暂时不需要"}:
+        return {"reserve": answer, "title": ""}
+    if answer == "需要":
+        return {"reserve": answer, "title": ""}
+    return {"reserve": "需要", "title": answer}
 
 
 def _reserved_item_to_text(item: object, index: int) -> str:

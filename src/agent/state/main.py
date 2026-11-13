@@ -10,6 +10,7 @@ def merge_value(old, new):
 class State(MessagesState):
     user_preferences: dict
     user_intent: str
+    title: Annotated[str, merge_value]
     city: Annotated[str, merge_value]
     budget_min: Annotated[float, merge_value]
     budget_max: Annotated[float, merge_value]
@@ -22,3 +23,4 @@ class State(MessagesState):
 
 class NeedReserveOutput(TypedDict):
     reserve: str
+    title: str

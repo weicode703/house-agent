@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- 寮曞叆 marked 搴撶敤浜庤В鏋?Markdown -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="/static/sse_parser.js"></script>
     <style>
         * {
             margin: 0;
@@ -763,7 +764,7 @@
         const API_BASE_URL = window.HOUSE_AGENT_API_BASE_URL
             || (['localhost', '127.0.0.1'].includes(window.location.hostname)
                 ? 'http://127.0.0.1:8001'
-                : `http://${window.location.hostname}:8001`);
+                : '/api');
 
         // 閰嶇疆 marked
         marked.setOptions({
@@ -848,7 +849,7 @@
                 const del = document.createElement('button');
                 del.className = 'delete-conversation';
                 del.type = 'button';
-                del.title = '鍒犻櫎瀵硅瘽';
+                del.title = '删除对话';
                 del.innerHTML = '<i class="fas fa-trash"></i>';
                 del.addEventListener('click', (event) => deleteConversation(conversation.id, event));
 
@@ -1103,7 +1104,7 @@
                 const thinkToggle = document.createElement('button');
                 thinkToggle.className = 'think-toggle';
                 thinkToggle.innerHTML = '<i class="fas fa-chevron-down"></i>';
-                thinkToggle.setAttribute('title', '鐐瑰嚮灞曞紑/鏀剁缉');
+                thinkToggle.setAttribute('title', '点击展开或收起');
 
                 thinkHeader.appendChild(thinkTitle);
                 thinkHeader.appendChild(thinkToggle);
@@ -1275,7 +1276,7 @@
                                                         thinkElement.style.display = 'block';
                                                     }
                                                     ensureThinkElementAttached();
-                                                    thinkContentText += '宸ュ叿璋冪敤瀹屾垚锛岀粨鏋滃涓嬶細\n';
+                                                    thinkContentText += '工具调用完成，结果如下：\n';
                                                     thinkContentText += msg.content + '\n';
                                                     thinkContent.textContent = thinkContentText;
                                                 }
@@ -1385,7 +1386,7 @@
             const thinkToggle = document.createElement('button');
             thinkToggle.className = 'think-toggle';
             thinkToggle.innerHTML = '<i class="fas fa-chevron-down"></i>';
-            thinkToggle.setAttribute('title', '鐐瑰嚮灞曞紑/鏀剁缉');
+            thinkToggle.setAttribute('title', '点击展开或收起');
 
             thinkHeader.appendChild(thinkTitle);
             thinkHeader.appendChild(thinkToggle);
@@ -1467,11 +1468,6 @@
             const message = chatInput.value.trim();
             if (!message || isSendingMessage) return;
 
-            if (!currentThreadId) {
-                await createThread();
-            }
-            if (!currentThreadId) return;
-
             isSendingMessage = true;
             sendBtn.disabled = true;
             chatInput.disabled = true;
@@ -1485,7 +1481,19 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
             persistCurrentConversation(message);
 
+            let turn = null;
             try {
+                turn = createAssistantTurn();
+                turn.thinkElement.style.display = 'block';
+                turn.thinkContent.textContent = '正在处理您的请求…';
+
+                if (!currentThreadId) {
+                    await createThread();
+                }
+                if (!currentThreadId) {
+                    throw new Error('会话创建失败');
+                }
+
                 const pendingInterruptElement = chatMessages.querySelector('#__interrupt__');
                 const isInterrupt = Boolean(pendingInterruptElement);
                 let requestBody;
@@ -1529,14 +1537,15 @@
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                const turn = createAssistantTurn();
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder();
                 let thinkContentText = '';
+                let hasThinkingDetails = false;
                 let aiMessageContent = '';
                 let startAI = false;
                 let currentAnswerElement = turn.answerElement;
                 let streamAnswerElement = null;
+                const sseParser = createSseParser(handleSseEvent);
 
                 function createNewAnswerElement() {
                     const element = document.createElement('div');
@@ -1568,6 +1577,9 @@
                 function appendAnswerBlock(markdownText, options = {}) {
                     const { interruptId = '' } = options;
                     streamAnswerElement = null;
+                    if (!hasThinkingDetails) {
+                        turn.thinkElement.style.display = 'none';
+                    }
                     let target = currentAnswerElement;
                     if (!target || target.textContent.trim() !== '') {
                         target = createNewAnswerElement();
@@ -1584,27 +1596,26 @@
                     chatMessages.scrollTop = chatMessages.scrollHeight;
                 }
 
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
+                function appendThinking(text) {
+                    if (!hasThinkingDetails) {
+                        thinkContentText = '';
+                        hasThinkingDetails = true;
+                    }
+                    thinkContentText += text;
+                    turn.thinkElement.style.display = 'block';
+                    turn.thinkContent.textContent = thinkContentText;
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
 
-                    const chunk = decoder.decode(value);
-                    const lines = chunk.split('\n');
-                    let currentType = '';
+                function handleSseEvent(currentType, dataStr) {
+                    if (dataStr.trim() === '') return;
+                    try {
+                        const data = JSON.parse(dataStr);
 
-                    for (const line of lines) {
-                        if (line.startsWith('event: ')) {
-                            currentType = line.substring(7);
-                        } else if (line.startsWith('data: ')) {
-                            const dataStr = line.substring(6);
-                            if (dataStr.trim() === '') continue;
-                            try {
-                                const data = JSON.parse(dataStr);
-
-                                if (currentType.startsWith('updates')) {
+                        if (currentType.startsWith('updates')) {
                                     if (Object.values(data).some(v => v && typeof v === 'object' && 'messages' in v)) {
-                                        if (currentType === 'updates\r') {
-                                            continue;
+                                        if (currentType === 'updates') {
+                                            return;
                                         }
 
                                         const messages = Object.values(data).flatMap(v => v.messages || []);
@@ -1612,27 +1623,17 @@
                                             if (!msg) continue;
 
                                             if (msg.type === 'ai' && msg.tool_calls && msg.tool_calls.length > 0) {
-                                                if (turn.thinkElement.style.display === 'none') {
-                                                    turn.thinkElement.style.display = 'block';
-                                                }
-                                                thinkContentText += '进行工具调用：';
+                                                let toolCallText = '正在调用工具：';
                                                 for (const tool of msg.tool_calls) {
-                                                    thinkContentText += ` ${tool.name}`;
+                                                    toolCallText += ` ${tool.name}`;
                                                 }
-                                                thinkContentText += '\n';
-                                                turn.thinkContent.textContent = thinkContentText;
-                                                chatMessages.scrollTop = chatMessages.scrollHeight;
+                                                appendThinking(`${toolCallText}\n`);
                                             } else if (msg.type === 'tool' && msg.content) {
                                                 if (currentType.includes('reserve_graph')) {
                                                     aiMessageContent = String(msg.content);
                                                     appendAnswerBlock(aiMessageContent);
                                                 } else {
-                                                    if (turn.thinkElement.style.display === 'none') {
-                                                        turn.thinkElement.style.display = 'block';
-                                                    }
-                                                    thinkContentText += '宸ュ叿璋冪敤瀹屾垚锛岀粨鏋滃涓嬶細\n';
-                                                    thinkContentText += msg.content + '\n';
-                                                    turn.thinkContent.textContent = thinkContentText;
+                                                    appendThinking(`工具调用完成，结果如下：\n${msg.content}\n`);
                                                 }
                                                 chatMessages.scrollTop = chatMessages.scrollHeight;
                                             }
@@ -1640,13 +1641,13 @@
                                     } else {
                                         const interruptPayload = findInterruptPayload(data);
                                         if (!interruptPayload || activeInterruptId === interruptPayload.id) {
-                                            continue;
+                                            return;
                                         }
 
                                         const interruptText = getInterruptText(interruptPayload);
                                         appendAnswerBlock(interruptText, { interruptId: interruptPayload.id });
                                     }
-                                } else if (currentType === 'messages/metadata\r') {
+                        } else if (currentType === 'messages/metadata') {
                                     const metadata = Object.values(data).map(v => v.metadata);
                                     if (metadata[0] && (
                                             metadata[0].langgraph_node === 'generate_query'
@@ -1660,23 +1661,37 @@
                                     } else {
                                         startAI = false;
                                     }
-                                } else if (currentType === 'messages/partial\r') {
+                        } else if (currentType === 'messages/partial') {
                                     const messageData = data[0];
                                     if (messageData.content && (messageData.type === 'ai') && startAI) {
+                                        if (!hasThinkingDetails) {
+                                            turn.thinkElement.style.display = 'none';
+                                        }
                                         aiMessageContent = messageData.content;
                                         const streamAnswerElement = ensureStreamingAnswerElement();
                                         streamAnswerElement.innerHTML = marked.parse(aiMessageContent);
                                         chatMessages.scrollTop = chatMessages.scrollHeight;
                                     }
                                 }
-                            } catch (e) {
-                                console.error('瑙ｆ瀽JSON澶辫触:', e, line);
-                            }
-                        }
+                    } catch (e) {
+                        console.error('瑙ｆ瀽JSON澶辫触:', e, dataStr);
                     }
+                }
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) {
+                        sseParser.push(decoder.decode());
+                        sseParser.end();
+                        break;
+                    }
+                    sseParser.push(decoder.decode(value, { stream: true }));
                 }
             } catch (error) {
                 console.error('鍙戦€佹秷鎭け璐?', error);
+                if (turn && !turn.answerElement.textContent.trim()) {
+                    turn.turnElement.remove();
+                }
                 const errorMessage = document.createElement('div');
                 errorMessage.className = 'message ai-message';
                 errorMessage.textContent = '抱歉，处理您的请求时出现了错误。请稍后再试。';

@@ -180,9 +180,7 @@ bash deploy.sh
 
 在线演示地址：
 
-```text
-前端：http://your-server-ip-or-domain:5500/
-```
+前端：[http://124.222.39.126:5500/static/house.html](http://124.222.39.126:5500/static/house.html)
 
 更多说明见 [DEPLOY.md](DEPLOY.md)。
 

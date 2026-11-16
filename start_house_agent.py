@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import os
 import shutil
 import subprocess
@@ -25,6 +26,17 @@ def run(command: list[str]) -> None:
 def docker_is_ready(docker: str) -> bool:
     result = subprocess.run(
         [docker, "info"],
+        cwd=PROJECT_DIR,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    return result.returncode == 0
+
+
+def image_exists(docker: str, image: str) -> bool:
+    result = subprocess.run(
+        [docker, "image", "inspect", image],
         cwd=PROJECT_DIR,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
@@ -76,6 +88,14 @@ def wait_for_http(url: str, label: str, timeout_seconds: int = 120) -> bool:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description="Start the local house-agent stack.")
+    parser.add_argument(
+        "--build",
+        action="store_true",
+        help="Rebuild the frontend and backend images before starting.",
+    )
+    args = parser.parse_args()
+
     if not (PROJECT_DIR / ".env").is_file():
         print("Missing .env. Copy .env.example to .env and fill in the required values.")
         return 1
@@ -96,7 +116,15 @@ def main() -> int:
             "docker-compose.local.yml",
         ]
         run([*compose, "config", "--quiet"])
-        run([*compose, "up", "-d", "--build"])
+        images = ["house-agent-backend:latest", "house-agent-frontend:latest"]
+        build_images = args.build or not all(image_exists(docker, image) for image in images)
+        if build_images:
+            reason = "--build was requested" if args.build else "a required image is missing"
+            print(f"Building Docker images because {reason}.", flush=True)
+            run([*compose, "up", "-d", "--build"])
+        else:
+            print("Reusing existing Docker images; use --build after backend or Dockerfile changes.", flush=True)
+            run([*compose, "up", "-d", "--no-build"])
         run([*compose, "ps"])
 
         frontend_ready = wait_for_http(FRONTEND_URL, "Frontend")

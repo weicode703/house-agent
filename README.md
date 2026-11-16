@@ -122,91 +122,53 @@ static/house.html               前端演示页面
 
 ## 本地运行
 
-### 1. 创建环境
+本地推荐使用 PyCharm 运行 `start_house_agent.py`。脚本会启动 Docker Compose 服务、检查前后端及 Nginx API 代理，并在 PyCharm 的 Run 窗口持续显示后端接口日志。
 
-```bash
-python -m venv .venv
-```
+### 1. 准备环境
 
-Windows PowerShell：
+- 安装并启动 Docker Desktop。
+- 使用 Python 3.12 创建或选择项目虚拟环境。
+- 将 `.env.example` 复制为 `.env`，填写 DeepSeek Key、MySQL 密码和 PostgreSQL 密码。
+- 如需使用本地 MySQL 房源数据，将数据库导出文件放在项目根目录并命名为 `house-mysql.sql`。该文件已排除在 Git 外，不要上传到 GitHub。
 
 ```powershell
-.\.venv\Scripts\Activate.ps1
+Copy-Item .env.example .env
 ```
 
-Linux / macOS：
+首次启动时，本地 MySQL 会从 `house-mysql.sql` 初始化空数据卷；已有数据卷不会重复导入。
 
-```bash
-source .venv/bin/activate
+### 2. 在 PyCharm 启动
+
+将 Run Configuration 的 Script path 设为 `start_house_agent.py`，然后运行。也可以在项目终端执行：
+
+```powershell
+python start_house_agent.py
 ```
 
-### 2. 安装依赖
+脚本会复用已有的前后端镜像；修改后端或 Dockerfile 后，添加 `--build` 强制重新构建：
 
-```bash
-pip install -U pip
-pip install -e .
-pip install -U "langgraph-cli[inmem]"
+```powershell
+python start_house_agent.py --build
 ```
 
-### 3. 配置环境变量
-
-```bash
-cp .env.example .env
-```
-
-按实际情况填写：
-
-```env
-DEEPSEEK_API_KEY=your_deepseek_api_key
-
-DB_DIALECT=mysql+pymysql
-DB_HOST=your_mysql_host
-DB_PORT=3300
-DB_NAME=house
-DB_USER=root
-DB_PASSWORD=your_mysql_password
-
-POSTGRES_DB=house_agent
-POSTGRES_USER=house_agent
-POSTGRES_PASSWORD=your_postgres_password
-```
-
-`.env` 包含密钥和数据库密码，不要提交到 GitHub。
-
-### 4. 启动后端
-
-```bash
-python -m langgraph_cli dev --host 0.0.0.0 --port 8001 --no-browser --allow-blocking
-```
-
-后端文档：
+前端地址：
 
 ```text
-http://127.0.0.1:8001/docs
+http://127.0.0.1:5500/
 ```
 
-### 5. 启动前端
-
-另开一个终端：
-
-```bash
-python -m http.server 5500
-```
-
-访问页面：
-
-```text
-http://127.0.0.1:5500/static/house.html
-```
+API 文档可通过 Nginx 代理访问 `http://127.0.0.1:5500/api/docs`。PyCharm Run 窗口关闭日志跟随或按 `Ctrl+C` 只会停止查看日志，Docker 容器仍会继续运行。
 
 ## Docker Compose 部署
 
-部署包包含：
+默认 Compose 服务：
 
-- `house-backend`：LangGraph 后端，端口 `8001`
-- `house-frontend`：Nginx 前端，端口 `5500`
+- `house-backend`：LangGraph 后端，仅绑定服务器本机的 `127.0.0.1:8001`
+- `house-frontend`：Nginx 前端，端口 `5500`，并将 `/api/` 请求代理到后端
 - `house-postgres`：LangGraph 状态和 Store 持久化，宿主机端口 `5433`
 - `house-redis`：LangGraph 队列，宿主机端口 `6380`
+
+本地额外配置 `docker-compose.local.yml` 会启动 `house-mysql` 并连接本地房源库。服务器上的房源 MySQL 可使用 `.env` 中配置的现有数据库。
 
 部署步骤：
 
@@ -219,7 +181,7 @@ bash deploy.sh
 在线演示地址：
 
 ```text
-前端：http://your-server-ip-or-domain:5500/static/house.html
+前端：http://your-server-ip-or-domain:5500/
 ```
 
 更多说明见 [DEPLOY.md](DEPLOY.md)。
@@ -244,5 +206,5 @@ bash deploy.sh
 ## 注意事项
 
 - 当前部署方式适合课程项目展示和个人作品集演示，不建议直接作为生产服务长期裸露公网。
-- 云服务器开放 `5500`、`8001`、`5433`、`6380` 时，建议结合安全组限制来源 IP。
+- 公网通常只需开放前端端口 `5500`。后端 `8001` 绑定在服务器本机；PostgreSQL `5433` 和 Redis `6380` 若不需要远程管理，应通过安全组或防火墙限制访问。
 - `.env`、日志、压缩包、虚拟环境、IDE 配置都已通过 `.gitignore` 排除。

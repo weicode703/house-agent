@@ -6,7 +6,13 @@ from typing import Any, Optional
 from dotenv import load_dotenv
 from langchain_community.agent_toolkits import SQLDatabaseToolkit
 from langchain_community.utilities import SQLDatabase
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, filter_messages
+from langchain_core.messages import (
+    AIMessage,
+    HumanMessage,
+    SystemMessage,
+    ToolMessage,
+    filter_messages,
+)
 from langgraph.prebuilt import ToolNode
 from langgraph.runtime import Runtime
 from langgraph.store.base import BaseStore
@@ -16,6 +22,7 @@ from src.agent.common.context import ContextSchema
 from src.agent.common.llm import model
 from src.agent.common.store import UserPreferences
 from src.agent.state.recommend import RecommendState, get_recommend_info
+from src.db_retry import invoke_database_tool_with_retry
 
 RECOMMEND_REQUEST_KEY = "recommend_input_request"
 RECOMMEND_RESPONSE_KEY = "recommend_input_response"
@@ -316,14 +323,30 @@ db_host = os.getenv("DB_HOST") or os.getenv("db_host")
 db_port = os.getenv("DB_PORT") or os.getenv("db_port")
 db_name = os.getenv("DB_NAME") or os.getenv("db_name")
 db_dialect = os.getenv("DB_DIALECT") or os.getenv("db_dialect") or "mysql+pymysql"
-db = SQLDatabase.from_uri(f"{db_dialect}://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}")
+db = SQLDatabase.from_uri(
+    f"{db_dialect}://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}",
+    engine_args={"pool_pre_ping": True, "pool_recycle": 1800},
+)
 toolkit = SQLDatabaseToolkit(db=db, llm=model)
 tools = toolkit.get_tools()
 
 get_schema_tool = next(tool for tool in tools if tool.name == "sql_db_schema")
-get_schema_node = ToolNode([get_schema_tool], name="get_schema")
 run_query_tool = next(tool for tool in tools if tool.name == "sql_db_query")
 run_query_node = ToolNode([run_query_tool], name="sql_db_query")
+
+
+def get_schema_node(state: RecommendState) -> dict[str, list[ToolMessage]]:
+    tool_messages = []
+    for tool_call in state["messages"][-1].tool_calls:
+        result = invoke_database_tool_with_retry(get_schema_tool, tool_call["args"])
+        tool_messages.append(
+            ToolMessage(
+                content=str(result),
+                tool_call_id=tool_call["id"],
+                name=get_schema_tool.name,
+            )
+        )
+    return {"messages": tool_messages}
 
 
 def list_tables(state: RecommendState) -> dict[str, list[Any]]:
@@ -335,7 +358,12 @@ def list_tables(state: RecommendState) -> dict[str, list[Any]]:
     }
     tool_call_message = AIMessage(content="", tool_calls=[tool_call])
     list_tables_tool = next(tool for tool in tools if tool.name == "sql_db_list_tables")
-    tool_message = list_tables_tool.invoke(tool_call)
+    table_names = invoke_database_tool_with_retry(list_tables_tool, tool_call["args"])
+    tool_message = ToolMessage(
+        content=str(table_names),
+        tool_call_id=tool_call["id"],
+        name=list_tables_tool.name,
+    )
     response = AIMessage(content=f"可用的数据表有：{tool_message.content}")
     return {"messages": [tool_call_message, tool_message, response]}
 

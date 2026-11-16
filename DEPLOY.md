@@ -1,10 +1,11 @@
 # Docker Compose 云服务器部署
 
-这个部署包会启动三个容器：
+默认 Compose 配置会启动四个容器：
 
 - `house-backend`：LangGraph 后端，端口 `8001`
 - `house-frontend`：静态前端页面，端口 `5500`
-- `house-postgres` / `house-redis`：LangGraph 运行时持久化和队列
+- `house-postgres`：LangGraph 运行时持久化和 Store
+- `house-redis`：LangGraph 运行时队列
 
 房源业务数据不放在这个 compose 里，后端会连接你已有的 MySQL：
 
@@ -49,8 +50,10 @@ bash deploy.sh
 
 ```text
 前端：http://your-server-ip-or-domain:5500/static/house.html
-后端：http://your-server-ip-or-domain:8001/docs
+API 文档：http://your-server-ip-or-domain:5500/api/docs
 ```
+
+后端端口 `8001` 只绑定服务器本机地址，不需要在云安全组中开放。浏览器通过前端 Nginx 的 `/api/` 路径访问后端。
 
 ## 4. 常用运维命令
 
@@ -62,7 +65,7 @@ docker compose restart house-backend
 docker compose down
 ```
 
-如果 `8001` 或 `5500` 被占用，修改 `docker-compose.yml` 左侧端口，例如：
+如果 `5500` 被占用，修改 `docker-compose.yml` 左侧端口，例如：
 
 ```yaml
 ports:
@@ -70,3 +73,5 @@ ports:
 ```
 
 左侧是云服务器端口，右侧是容器内部端口。
+
+PostgreSQL 的 `5433` 和 Redis 的 `6380` 端口仅在需要远程管理时开放，并应限制来源 IP。

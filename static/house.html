@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>智能租房助手</title>
+    <title>租房助手 - 找房与咨询</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- 寮曞叆 marked 搴撶敤浜庤В鏋?Markdown -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -620,135 +620,1534 @@
                 height: 650px;
             }
         }
+
+        :root {
+            --ink: #202923;
+            --muted: #68746c;
+            --line: #dfe6e0;
+            --canvas: #f4f6f3;
+            --surface: #ffffff;
+            --green: #24624a;
+            --green-dark: #194b39;
+            --green-soft: #e8f0eb;
+            --coral: #bd6049;
+            --shadow: 0 18px 52px rgba(22, 39, 29, 0.16);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-width: 320px;
+            background: var(--canvas);
+            color: var(--ink);
+            font-family: Inter, "Segoe UI", "Microsoft YaHei", sans-serif;
+            line-height: 1.55;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        button:focus-visible,
+        input:focus-visible,
+        a:focus-visible {
+            outline: 3px solid rgba(36, 98, 74, 0.25);
+            outline-offset: 2px;
+        }
+
+        .site-shell {
+            min-height: 100vh;
+        }
+
+        .site-header {
+            height: 76px;
+            padding: 0 max(24px, calc((100vw - 1240px) / 2));
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #fff;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 11px;
+            color: var(--ink);
+            text-decoration: none;
+        }
+
+        .brand-mark {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border-radius: 8px;
+            background: var(--green);
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .brand-copy {
+            display: grid;
+            line-height: 1.15;
+        }
+
+        .brand-copy strong {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .brand-copy small {
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+        }
+
+        .service-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .service-status span {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #4b9468;
+        }
+
+        .header-chat-btn,
+        .guide-chat-btn {
+            min-height: 40px;
+            border: 1px solid var(--green);
+            border-radius: 6px;
+            padding: 0 15px;
+            background: var(--green);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 650;
+            cursor: pointer;
+            transition: background 140ms ease, border-color 140ms ease;
+        }
+
+        .header-chat-btn:hover,
+        .guide-chat-btn:hover,
+        .search-btn:hover {
+            border-color: var(--green-dark);
+            background: var(--green-dark);
+        }
+
+        .header-chat-btn i {
+            margin-right: 7px;
+        }
+
+        .container {
+            width: min(1240px, 100%);
+            margin: 0 auto;
+            padding: 42px 24px 28px;
+        }
+
+        .search-section {
+            padding: 4px 0 0;
+        }
+
+        .section-eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--green);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .section-eyebrow span {
+            width: 18px;
+            height: 1px;
+            background: #a6b9aa;
+        }
+
+        .search-heading-row {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 24px;
+            margin: 13px 0 25px;
+        }
+
+        .search-heading-row h1 {
+            margin: 0;
+            color: var(--ink);
+            font-size: 30px;
+            font-weight: 680;
+            line-height: 1.25;
+        }
+
+        .subtitle {
+            max-width: 700px;
+            margin: 10px 0 0;
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .search-note {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 4px;
+            color: var(--muted);
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .search-note i {
+            color: var(--green);
+        }
+
+        .search-box {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr 1.2fr auto;
+            align-items: end;
+            gap: 13px;
+            margin: 0;
+            padding: 20px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--surface);
+            box-shadow: 0 4px 16px rgba(28, 45, 33, 0.04);
+        }
+
+        .search-field {
+            display: grid;
+            gap: 7px;
+            min-width: 0;
+            color: #49564d;
+            font-size: 12px;
+            font-weight: 650;
+        }
+
+        .search-input {
+            width: 100%;
+            min-width: 0;
+            height: 46px;
+            padding: 0 13px;
+            border: 1px solid #dce3dc;
+            border-radius: 5px;
+            background: #fbfcfb;
+            color: var(--ink);
+            font-size: 14px;
+            transition: border-color 140ms ease, background 140ms ease;
+        }
+
+        .search-input::placeholder {
+            color: #98a29b;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--green);
+            background: #fff;
+        }
+
+        .search-btn {
+            height: 46px;
+            padding: 0 20px;
+            border: 1px solid var(--green);
+            border-radius: 5px;
+            background: var(--green);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 650;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: background 140ms ease, border-color 140ms ease;
+        }
+
+        .search-btn i {
+            margin-right: 7px;
+        }
+
+        .quick-searches {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 9px;
+            margin-top: 14px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .quick-search {
+            min-height: 30px;
+            padding: 3px 10px;
+            border: 1px solid #dfe7e0;
+            border-radius: 4px;
+            background: #fff;
+            color: #4b6454;
+            font-size: 12px;
+            cursor: pointer;
+            transition: border-color 140ms ease, color 140ms ease;
+        }
+
+        .quick-search:hover {
+            border-color: var(--green);
+            color: var(--green-dark);
+        }
+
+        .service-guide {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(280px, 0.88fr);
+            align-items: stretch;
+            gap: 36px;
+            margin-top: 54px;
+            padding: 30px 0 38px;
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .guide-copy {
+            align-self: center;
+            padding: 12px 0;
+        }
+
+        .guide-copy h2 {
+            margin: 12px 0 10px;
+            color: var(--ink);
+            font-size: 23px;
+            font-weight: 650;
+            line-height: 1.35;
+        }
+
+        .guide-copy p {
+            max-width: 580px;
+            margin: 0 0 20px;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .guide-chat-btn {
+            min-height: 38px;
+            padding: 0 13px;
+            font-size: 13px;
+        }
+
+        .guide-chat-btn i {
+            margin-left: 8px;
+        }
+
+        .guide-image {
+            min-height: 224px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 7px;
+            background-color: #d5ddd6;
+            background-image: url("https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=82");
+            background-position: center 54%;
+            background-size: cover;
+        }
+
+        .guide-image span {
+            position: absolute;
+            right: 12px;
+            bottom: 12px;
+            padding: 7px 10px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.94);
+            color: #344239;
+            font-size: 12px;
+        }
+
+        .site-footer {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 18px 0 4px;
+            color: #818b83;
+            font-size: 11px;
+        }
+
+        .chat-icon {
+            position: fixed;
+            z-index: 1000;
+            right: 26px;
+            bottom: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            width: auto;
+            min-width: 168px;
+            height: 48px;
+            padding: 0 16px;
+            border: 0;
+            border-radius: 6px;
+            background: var(--green);
+            color: #fff;
+            box-shadow: 0 8px 24px rgba(25, 75, 57, 0.22);
+            font-size: 13px;
+            font-weight: 650;
+            cursor: pointer;
+            transition: background 140ms ease, transform 140ms ease;
+        }
+
+        .chat-icon:hover {
+            transform: translateY(-2px);
+            background: var(--green-dark);
+            box-shadow: 0 10px 24px rgba(25, 75, 57, 0.26);
+        }
+
+        .chat-icon i {
+            font-size: 16px;
+        }
+
+        .chat-container {
+            position: fixed;
+            z-index: 1001;
+            right: 24px;
+            bottom: 84px;
+            display: none;
+            flex-direction: column;
+            width: min(1060px, calc(100vw - 48px));
+            height: min(760px, calc(100dvh - 120px));
+            min-height: 420px;
+            overflow: hidden;
+            border: 1px solid #dce3dc;
+            border-radius: 9px;
+            background: #fff;
+            box-shadow: var(--shadow);
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 72px;
+            padding: 12px 18px;
+            background: var(--green-dark);
+            color: #fff;
+        }
+
+        .chat-heading {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            min-width: 0;
+        }
+
+        .chat-avatar {
+            width: 38px;
+            height: 38px;
+            flex: 0 0 auto;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .chat-heading strong,
+        .chat-heading small {
+            display: block;
+        }
+
+        .chat-heading strong {
+            font-size: 14px;
+            font-weight: 650;
+        }
+
+        .chat-heading small {
+            margin-top: 3px;
+            color: rgba(255, 255, 255, 0.76);
+            font-size: 11px;
+            font-weight: 400;
+        }
+
+        .close-chat {
+            width: 34px;
+            height: 34px;
+            flex: 0 0 auto;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            background: transparent;
+            color: #fff;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .close-chat:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .chat-body {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .conversation-sidebar {
+            width: 220px;
+            min-width: 0;
+            flex: 0 0 220px;
+            border-right: 1px solid var(--line);
+            background: #f7f9f7;
+        }
+
+        .new-conversation-btn {
+            margin: 12px;
+            padding: 9px 12px;
+            border: 1px solid #cedbd1;
+            border-radius: 5px;
+            background: #fff;
+            color: var(--green-dark);
+            font-size: 13px;
+        }
+
+        .new-conversation-btn:hover {
+            transform: none;
+            background: var(--green-soft);
+        }
+
+        .conversation-list {
+            padding: 0 8px 12px;
+        }
+
+        .conversation-item {
+            min-height: 42px;
+            border-radius: 5px;
+            margin-bottom: 3px;
+            color: #526056;
+        }
+
+        .conversation-item.active {
+            background: var(--green-soft);
+            color: var(--green-dark);
+        }
+
+        .delete-conversation {
+            opacity: 0.65;
+        }
+
+        .chat-main {
+            flex: 1;
+            min-width: 0;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .chat-messages {
+            min-width: 0;
+            min-height: 0;
+            gap: 12px;
+            padding: 24px clamp(14px, 3vw, 34px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            background: #f8faf8;
+        }
+
+        .assistant-turn {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 10px;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .message {
+            width: fit-content;
+            max-width: min(88%, 880px);
+            min-width: 0;
+            margin: 0;
+            padding: 12px 15px;
+            border-radius: 7px;
+            line-height: 1.65;
+            overflow-wrap: anywhere;
+        }
+
+        .user-message {
+            align-self: flex-end;
+            border: 1px solid var(--green);
+            border-radius: 7px 7px 0 7px;
+            background: var(--green);
+            color: #fff;
+        }
+
+        .ai-message {
+            align-self: flex-start;
+            max-width: min(100%, 930px);
+            border: 1px solid #e1e7e2;
+            border-radius: 7px 7px 7px 0;
+            background: #fff;
+            color: #29332d;
+        }
+
+        .process-message {
+            width: fit-content;
+            max-width: min(100%, 930px);
+            margin: 0;
+            padding: 10px 13px;
+            border: 1px solid #e0e7e1;
+            border-radius: 6px;
+            background: #f0f4f0;
+            color: #617067;
+            font-size: 12px;
+        }
+
+        .think-header {
+            padding-bottom: 6px;
+            margin-bottom: 6px;
+            border-color: #dfe6e0;
+        }
+
+        .think-title {
+            color: #536359;
+            font-size: 12px;
+        }
+
+        .think-content {
+            max-width: 100%;
+            overflow-wrap: anywhere;
+        }
+
+        .ai-message h1,
+        .ai-message h2,
+        .ai-message h3 {
+            color: #27352d;
+            font-size: 1.05em;
+        }
+
+        .ai-message p:last-child,
+        .ai-message ul:last-child,
+        .ai-message ol:last-child {
+            margin-bottom: 0;
+        }
+
+        .ai-message table {
+            display: block;
+            width: max-content;
+            max-width: 100%;
+            margin: 10px 0;
+            overflow-x: auto;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .ai-message th,
+        .ai-message td {
+            min-width: 72px;
+            padding: 8px 10px;
+            border: 1px solid #dfe6e0;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .ai-message th {
+            background: #eff4f0;
+            color: #344a3b;
+            font-weight: 650;
+        }
+
+        .ai-message blockquote {
+            border-left-color: var(--green);
+        }
+
+        .chat-input-area {
+            min-height: 78px;
+            padding: 14px 18px;
+            border-top: 1px solid var(--line);
+            background: #fff;
+        }
+
+        .chat-input {
+            min-width: 0;
+            height: 46px;
+            padding: 0 13px;
+            border: 1px solid #dce3dc;
+            border-radius: 5px;
+            background: #fbfcfb;
+            color: var(--ink);
+            font-size: 14px;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--green);
+        }
+
+        .send-btn {
+            width: 46px;
+            height: 46px;
+            flex: 0 0 46px;
+            display: grid;
+            place-items: center;
+            padding: 0;
+            border-radius: 5px;
+            background: var(--green);
+            font-size: 15px;
+        }
+
+        .send-btn:hover {
+            opacity: 1;
+            background: var(--green-dark);
+        }
+
+        .send-btn:disabled,
+        .chat-input:disabled {
+            cursor: wait;
+            opacity: 0.65;
+        }
+
+        @media (max-width: 900px) {
+            .search-box {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .search-btn {
+                width: 100%;
+            }
+
+            .service-guide {
+                grid-template-columns: minmax(0, 1fr) minmax(220px, 0.8fr);
+                gap: 22px;
+            }
+
+            .chat-container {
+                width: min(900px, calc(100vw - 32px));
+                height: min(760px, calc(100dvh - 100px));
+                right: 16px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .site-header {
+                height: 64px;
+                padding: 0 16px;
+            }
+
+            .header-actions {
+                gap: 12px;
+            }
+
+            .service-status {
+                font-size: 11px;
+            }
+
+            .header-chat-btn {
+                min-height: 36px;
+                padding: 0 10px;
+                font-size: 12px;
+            }
+
+            .container {
+                padding: 30px 16px 22px;
+            }
+
+            .search-heading-row {
+                display: block;
+                margin-bottom: 18px;
+            }
+
+            .search-heading-row h1 {
+                font-size: 25px;
+            }
+
+            .subtitle {
+                font-size: 13px;
+            }
+
+            .search-note {
+                margin-top: 13px;
+            }
+
+            .search-box {
+                grid-template-columns: minmax(0, 1fr);
+                gap: 12px;
+                padding: 15px;
+            }
+
+            .search-btn {
+                margin-top: 2px;
+            }
+
+            .quick-searches {
+                gap: 7px;
+            }
+
+            .quick-searches > span {
+                width: 100%;
+            }
+
+            .service-guide {
+                grid-template-columns: minmax(0, 1fr);
+                gap: 18px;
+                margin-top: 36px;
+                padding: 26px 0;
+            }
+
+            .guide-copy h2 {
+                font-size: 20px;
+            }
+
+            .guide-image {
+                min-height: 190px;
+            }
+
+            .site-footer {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .chat-icon {
+                right: 16px;
+                bottom: 16px;
+                min-width: 48px;
+                width: 48px;
+                height: 48px;
+                padding: 0;
+            }
+
+            .chat-icon span {
+                display: none;
+            }
+
+            .chat-container {
+                inset: 8px;
+                width: auto;
+                height: auto;
+                min-height: 0;
+                border-radius: 8px;
+            }
+
+            .chat-header {
+                min-height: 64px;
+                padding: 9px 12px;
+            }
+
+            .chat-heading small {
+                max-width: 245px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .chat-body {
+                flex-direction: column;
+            }
+
+            .conversation-sidebar {
+                width: 100%;
+                flex: 0 0 auto;
+                display: flex;
+                align-items: center;
+                height: 58px;
+                border-right: 0;
+                border-bottom: 1px solid var(--line);
+            }
+
+            .new-conversation-btn {
+                width: 106px;
+                min-width: 106px;
+                margin: 7px;
+                padding: 8px;
+            }
+
+            .conversation-list {
+                display: flex;
+                flex: 1;
+                gap: 5px;
+                min-width: 0;
+                overflow-x: auto;
+                overflow-y: hidden;
+                padding: 6px 7px 6px 0;
+            }
+
+            .conversation-item {
+                width: 150px;
+                min-width: 150px;
+                height: 40px;
+                margin: 0;
+            }
+
+            .delete-conversation {
+                opacity: 1;
+            }
+
+            .chat-main {
+                flex: 1;
+            }
+
+            .chat-messages {
+                padding: 16px 12px;
+            }
+
+            .message {
+                max-width: 94%;
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+
+            .ai-message {
+                max-width: 100%;
+            }
+
+            .chat-input-area {
+                min-height: 68px;
+                padding: 10px;
+                gap: 8px;
+            }
+
+            .chat-input {
+                height: 44px;
+                padding: 0 10px;
+                font-size: 13px;
+            }
+
+            .send-btn {
+                width: 44px;
+                height: 44px;
+                flex-basis: 44px;
+            }
+
+            .ai-message table {
+                font-size: 12px;
+            }
+
+            .ai-message th,
+            .ai-message td {
+                min-width: 64px;
+                padding: 7px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        .site-header {
+            height: 68px;
+            padding: 0 max(24px, calc((100vw - 1320px) / 2));
+            box-shadow: 0 1px 3px rgba(26, 35, 29, 0.05);
+        }
+
+        .brand-mark {
+            width: 34px;
+            height: 34px;
+            border-radius: 5px;
+            background: #27664e;
+        }
+
+        .brand-copy strong {
+            font-size: 15px;
+        }
+
+        .brand-copy small {
+            font-size: 10px;
+        }
+
+        .header-actions {
+            gap: 24px;
+        }
+
+        .header-nav-link {
+            color: #4c5850;
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        .header-nav-link:hover {
+            color: #24624a;
+        }
+
+        .header-chat-btn {
+            min-height: 36px;
+            border-radius: 5px;
+            padding: 0 12px;
+            font-size: 12px;
+        }
+
+        .container {
+            width: min(1320px, 100%);
+            padding: 24px 24px 14px;
+        }
+
+        .app-layout {
+            display: grid;
+            grid-template-columns: minmax(300px, 0.78fr) minmax(0, 1.7fr);
+            align-items: start;
+            gap: 18px;
+        }
+
+        .search-section {
+            min-width: 0;
+            padding: 6px 0 0;
+        }
+
+        .panel-kicker {
+            margin-bottom: 7px;
+            color: #a05a43;
+            font-size: 12px;
+            font-weight: 650;
+        }
+
+        .search-section h1 {
+            margin: 0;
+            color: #26312a;
+            font-size: 25px;
+            font-weight: 650;
+            line-height: 1.3;
+        }
+
+        .subtitle {
+            margin: 6px 0 18px;
+            color: #758078;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .search-box {
+            grid-template-columns: minmax(0, 1fr);
+            align-items: stretch;
+            gap: 13px;
+            padding: 16px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(28, 45, 33, 0.035);
+        }
+
+        .search-field {
+            gap: 6px;
+            color: #566159;
+            font-size: 11px;
+        }
+
+        .search-field > span i {
+            width: 14px;
+            color: #718078;
+            font-size: 11px;
+        }
+
+        .search-input {
+            height: 40px;
+            border-radius: 4px;
+            background: #fff;
+            font-size: 13px;
+        }
+
+        .search-btn {
+            height: 42px;
+            border-radius: 4px;
+            padding: 0 14px;
+            font-size: 13px;
+        }
+
+        .quick-searches {
+            align-items: flex-start;
+            gap: 7px;
+            margin-top: 17px;
+        }
+
+        .quick-search-label {
+            width: 100%;
+            margin-bottom: 1px;
+            color: #647067;
+            font-size: 11px;
+            font-weight: 650;
+        }
+
+        .quick-search {
+            min-height: 28px;
+            border-radius: 4px;
+            padding: 3px 8px;
+            color: #53635a;
+            font-size: 11px;
+        }
+
+        .popular-cities {
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid #e5e9e5;
+            color: #647067;
+            font-size: 11px;
+        }
+
+        .popular-cities > span {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 650;
+        }
+
+        .popular-cities > div {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 13px;
+        }
+
+        .city-choice {
+            border: 0;
+            padding: 2px 0;
+            background: transparent;
+            color: #68766d;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .city-choice:hover {
+            color: #24624a;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        .place-preview {
+            position: relative;
+            height: 176px;
+            margin: 20px 0 0;
+            overflow: hidden;
+            border-radius: 5px;
+            background: #e2e5e1;
+        }
+
+        .place-preview img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 55%;
+        }
+
+        .place-preview figcaption {
+            position: absolute;
+            right: 9px;
+            bottom: 9px;
+            border-radius: 3px;
+            padding: 5px 8px;
+            background: rgba(255, 255, 255, 0.94);
+            color: #536058;
+            font-size: 10px;
+        }
+
+        .chat-section {
+            min-width: 0;
+        }
+
+        .chat-container {
+            position: relative;
+            inset: auto;
+            display: flex;
+            width: 100%;
+            height: min(760px, calc(100vh - 112px));
+            min-height: 540px;
+            border: 1px solid #dfe5df;
+            border-radius: 6px;
+            box-shadow: 0 3px 14px rgba(28, 45, 33, 0.06);
+        }
+
+        .chat-header {
+            min-height: 62px;
+            padding: 9px 14px;
+            border-bottom: 1px solid #e4e9e4;
+            background: #fff;
+            color: #26332b;
+        }
+
+        .chat-avatar {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #dce5dd;
+            border-radius: 5px;
+            background: #edf3ee;
+            color: #27664e;
+        }
+
+        .chat-heading strong {
+            font-size: 13px;
+        }
+
+        .chat-heading small {
+            color: #7a857e;
+            font-size: 10px;
+        }
+
+        .close-chat {
+            width: 30px;
+            height: 30px;
+            border-color: transparent;
+            color: #758078;
+        }
+
+        .close-chat:hover {
+            background: #f0f3f0;
+        }
+
+        .chat-body {
+            flex-direction: row;
+        }
+
+        .conversation-sidebar {
+            width: 174px;
+            flex-basis: 174px;
+            background: #f8f9f8;
+        }
+
+        .new-conversation-btn {
+            width: calc(100% - 20px);
+            margin: 10px;
+            padding: 8px 10px;
+            border-radius: 4px;
+            color: #3e5e4b;
+            font-size: 12px;
+        }
+
+        .conversation-list {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+        }
+
+        .conversation-item {
+            padding: 9px 7px 9px 9px;
+            font-size: 12px;
+        }
+
+        .chat-main {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            min-height: 0;
+            gap: 10px;
+            padding: 20px clamp(12px, 2vw, 24px);
+            background: #f7f8f7;
+        }
+
+        .message {
+            font-size: 13px;
+        }
+
+        .ai-message {
+            border-color: #e2e7e2;
+        }
+
+        .user-message {
+            border-color: #52695b;
+            background: #52695b;
+        }
+
+        .chat-input-area {
+            min-height: 68px;
+            padding: 10px 12px;
+        }
+
+        .chat-input {
+            height: 42px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .send-btn {
+            width: 42px;
+            height: 42px;
+            flex-basis: 42px;
+            border-radius: 4px;
+            background: #27664e;
+        }
+
+        .chat-icon {
+            display: none;
+            right: 16px;
+            bottom: 16px;
+            min-width: 48px;
+            width: 48px;
+            height: 48px;
+            padding: 0;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+
+        .chat-icon span {
+            display: none;
+        }
+
+        .site-footer {
+            padding-top: 12px;
+            font-size: 10px;
+        }
+
+        @media (max-width: 900px) {
+            .app-layout {
+                grid-template-columns: minmax(250px, 0.75fr) minmax(0, 1.25fr);
+                gap: 13px;
+            }
+
+            .chat-container {
+                min-height: 520px;
+            }
+
+            .conversation-sidebar {
+                width: 145px;
+                flex-basis: 145px;
+            }
+        }
+
+        @media (max-width: 680px) {
+            .site-header {
+                height: 60px;
+                padding: 0 14px;
+            }
+
+            .header-actions {
+                gap: 14px;
+            }
+
+            .container {
+                padding: 18px 14px 12px;
+            }
+
+            .app-layout {
+                grid-template-columns: minmax(0, 1fr);
+                gap: 18px;
+            }
+
+            .search-section {
+                padding-top: 0;
+            }
+
+            .search-section h1 {
+                font-size: 22px;
+            }
+
+            .search-box {
+                grid-template-columns: minmax(0, 1fr);
+                gap: 10px;
+                padding: 13px;
+            }
+
+            .quick-searches {
+                margin-top: 13px;
+            }
+
+            .place-preview {
+                height: 148px;
+                margin-top: 15px;
+            }
+
+            .chat-container {
+                width: 100%;
+                height: min(680px, 74vh);
+                min-height: 480px;
+            }
+
+            .chat-body {
+                flex-direction: column;
+            }
+
+            .conversation-sidebar {
+                width: 100%;
+                flex: 0 0 54px;
+                display: flex;
+                align-items: center;
+                height: 54px;
+                border-right: 0;
+                border-bottom: 1px solid var(--line);
+            }
+
+            .new-conversation-btn {
+                width: 94px;
+                min-width: 94px;
+                margin: 6px;
+                padding: 7px 8px;
+            }
+
+            .conversation-list {
+                display: flex;
+                flex: 1;
+                gap: 5px;
+                min-width: 0;
+                overflow-x: auto;
+                overflow-y: hidden;
+                padding: 5px 6px 5px 0;
+            }
+
+            .conversation-item {
+                width: 140px;
+                min-width: 140px;
+                height: 38px;
+                margin: 0;
+            }
+
+            .delete-conversation {
+                opacity: 1;
+            }
+
+            .chat-main {
+                flex: 1;
+            }
+
+            .chat-messages {
+                padding: 14px 10px;
+            }
+
+            .message {
+                max-width: 94%;
+                padding: 9px 11px;
+                font-size: 13px;
+            }
+
+            .ai-message {
+                max-width: 100%;
+            }
+
+            .chat-input-area {
+                min-height: 62px;
+                padding: 8px;
+                gap: 7px;
+            }
+
+            .chat-input {
+                height: 42px;
+                padding: 0 9px;
+                font-size: 12px;
+            }
+
+            .send-btn {
+                width: 42px;
+                height: 42px;
+                flex-basis: 42px;
+            }
+
+            .site-footer {
+                flex-direction: row;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>智能租房助手</h1>
-            <p class="subtitle">AI 智能推荐，快速找到心仪房源。只需描述您的需求，智能助手将为您匹配最合适的租房选项。</p>
+    <div class="site-shell">
+        <header class="site-header">
+            <a class="brand" href="#top" aria-label="租房助手首页">
+                <span class="brand-mark"><i class="fas fa-house"></i></span>
+                <span class="brand-copy"><strong>租房助手</strong><small>房源查找</small></span>
+            </a>
+            <div class="header-actions">
+                <a class="header-nav-link" href="#top">找房</a>
+                <button class="header-chat-btn" id="headerChatBtn" type="button">
+                    <i class="fas fa-comment-dots" aria-hidden="true"></i> 租房咨询
+                </button>
+            </div>
         </header>
 
-        <div class="search-box">
-            <input type="text" class="search-input" placeholder="输入城市、区域或小区名称">
-            <input type="text" class="search-input" placeholder="租金预算（元/月）">
-            <input type="text" class="search-input" placeholder="户型需求（如：1室1厅）">
-            <button class="search-btn">搜索房源</button>
-        </div>
+        <main class="container" id="top">
+            <div class="app-layout">
+                <section class="search-section" aria-labelledby="pageTitle">
+                    <div class="panel-kicker">房源筛选</div>
+                    <h1 id="pageTitle">找房</h1>
+                    <p class="subtitle">填写条件开始筛选，也可以在右侧继续补充需求。</p>
 
-        <div class="features">
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-robot"></i>
-                </div>
-                <h3 class="feature-title">AI 智能推荐</h3>
-                <p class="feature-desc">基于您的需求，智能匹配最合适的房源，节省筛选时间。</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-database"></i>
-                </div>
-                <h3 class="feature-title">海量真实房源</h3>
-                <p class="feature-desc">覆盖全国主要城市，实时更新，确保信息准确可靠。</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-comments"></i>
-                </div>
-                <h3 class="feature-title">智能对话咨询</h3>
-                <p class="feature-desc">通过自然对话理解您的需求，提供个性化租房建议。</p>
-            </div>
-        </div>
+                    <form class="search-box" id="searchForm">
+                        <label class="search-field">
+                            <span><i class="fas fa-location-dot" aria-hidden="true"></i> 城市 / 区域</span>
+                            <input type="text" class="search-input" id="searchLocation" placeholder="例如：北京海淀" autocomplete="address-level2">
+                        </label>
+                        <label class="search-field">
+                            <span><i class="fas fa-coins" aria-hidden="true"></i> 月租预算</span>
+                            <input type="text" class="search-input" id="searchBudget" placeholder="例如：3000 元以内" inputmode="text">
+                        </label>
+                        <label class="search-field">
+                            <span><i class="fas fa-door-open" aria-hidden="true"></i> 户型 / 租住方式</span>
+                            <input type="text" class="search-input" id="searchLayout" placeholder="例如：整租两居 / 合租">
+                        </label>
+                        <button class="search-btn" type="submit"><i class="fas fa-magnifying-glass" aria-hidden="true"></i> 搜索房源</button>
+                    </form>
 
-        <div class="house-list">
-            <h2 class="section-title">推荐房源</h2>
-            <div class="houses">
-                <div class="house-card">
-                    <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="公寓图片" class="house-img">
-                    <div class="house-info">
-                        <h3 class="house-title">整租·阳光公寓 1室1厅1卫</h3>
-                        <div class="house-location">
-                            <i class="fas fa-map-marker-alt"></i> 北京海淀·中关村
-                        </div>
-                        <div class="house-price">¥4500/月</div>
-                        <div class="house-tags">
-                            <span class="tag">近地铁</span>
-                            <span class="tag">精装修</span>
-                            <span class="tag">拎包入住</span>
+                    <div class="quick-searches" aria-label="快捷租房需求">
+                        <span class="quick-search-label">快捷需求</span>
+                        <button type="button" class="quick-search" data-prompt="北京，预算 3000 元以内，帮我推荐房源">北京 · 3000 元以内</button>
+                        <button type="button" class="quick-search" data-prompt="上海浦东，想找合租房">上海浦东 · 合租</button>
+                        <button type="button" class="quick-search" data-prompt="北京通州，想找整租两居">北京通州 · 整租两居</button>
+                    </div>
+
+                    <div class="popular-cities">
+                        <span>常用城市</span>
+                        <div>
+                            <button type="button" class="city-choice" data-city="北京">北京</button>
+                            <button type="button" class="city-choice" data-city="上海">上海</button>
+                            <button type="button" class="city-choice" data-city="广州">广州</button>
+                            <button type="button" class="city-choice" data-city="深圳">深圳</button>
                         </div>
                     </div>
-                </div>
-                <div class="house-card">
-                    <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="公寓图片" class="house-img">
-                    <div class="house-info">
-                        <h3 class="house-title">合租·青年社区 主卧独卫</h3>
-                        <div class="house-location">
-                            <i class="fas fa-map-marker-alt"></i> 上海浦东·陆家嘴
-                        </div>
-                        <div class="house-price">¥3200/月</div>
-                        <div class="house-tags">
-                            <span class="tag">室友友好</span>
-                            <span class="tag">智能门锁</span>
-                            <span class="tag">公共区域</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="house-card">
-                    <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="公寓图片" class="house-img">
-                    <div class="house-info">
-                        <h3 class="house-title">整租·温馨家园 2室1厅1卫</h3>
-                        <div class="house-location">
-                            <i class="fas fa-map-marker-alt"></i> 广州天河·珠江新城
-                        </div>
-                        <div class="house-price">¥5800/月</div>
-                        <div class="house-tags">
-                            <span class="tag">南北通透</span>
-                            <span class="tag">家电齐全</span>
-                            <span class="tag">小区安静</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <footer>
-            <p>© 智能租房助手 | 提供 AI 驱动的智能租房推荐服务</p>
-        </footer>
+                    <figure class="place-preview">
+                        <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1000&q=82" alt="明亮的公寓起居空间" loading="lazy">
+                        <figcaption>居住空间参考</figcaption>
+                    </figure>
+                </section>
+
+                <section class="chat-section" aria-label="租房咨询对话">
+                    <div class="chat-container" id="chatContainer" role="region" aria-label="租房咨询">
+                        <div class="chat-header">
+                            <div class="chat-heading">
+                                <span class="chat-avatar"><i class="fas fa-house" aria-hidden="true"></i></span>
+                                <span><strong>租房咨询</strong><small>房源筛选与预约</small></span>
+                            </div>
+                            <button class="close-chat" id="closeChat" type="button" aria-label="收起对话" title="收起对话">
+                                <i class="fas fa-minus" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <div class="chat-body">
+                            <aside class="conversation-sidebar" id="conversationSidebar" aria-label="历史对话">
+                                <button class="new-conversation-btn" id="newConversationBtn" type="button">
+                                    <i class="fas fa-plus" aria-hidden="true"></i> 新对话
+                                </button>
+                                <div class="conversation-list" id="conversationList"></div>
+                            </aside>
+                            <div class="chat-main">
+                                <div class="chat-messages" id="chatMessages" aria-live="polite">
+                                    <div class="message ai-message">
+                                        你好，需要找哪个城市的房子？告诉我预算和户型，我来帮你筛选。
+                                    </div>
+                                </div>
+                                <div class="chat-input-area">
+                                    <input type="text" class="chat-input" id="chatInput" placeholder="输入城市、预算、户型或其他要求" aria-label="输入租房需求">
+                                    <button class="send-btn" id="sendBtn" type="button" aria-label="发送消息" title="发送消息"><i class="fas fa-arrow-up" aria-hidden="true"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <footer class="site-footer">
+                <span>租房助手 · 找房与预约</span>
+                <span>房源信息以查询结果为准</span>
+            </footer>
+        </main>
     </div>
 
-    <!-- 鑱婂ぉ鍥炬爣 -->
-    <div class="chat-icon" id="chatIcon">
-        <i class="fas fa-comment-dots"></i>
-    </div>
-
-    <!-- 鑱婂ぉ瀹瑰櫒 -->
-    <div class="chat-container" id="chatContainer">
-        <div class="chat-header">
-            <span>租房智能助手</span>
-            <button class="close-chat" id="closeChat">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="chat-body">
-            <aside class="conversation-sidebar" id="conversationSidebar">
-                <button class="new-conversation-btn" id="newConversationBtn">
-                    <i class="fas fa-plus"></i> 新对话
-                </button>
-                <div class="conversation-list" id="conversationList"></div>
-            </aside>
-            <div class="chat-main">
-                <div class="chat-messages" id="chatMessages">
-                    <div class="message ai-message">
-                        您好！我是租房智能助手，可以帮助您寻找合适的房源。请告诉我您的需求，例如：城市、预算等。
-                    </div>
-                </div>
-                <div class="chat-input-area">
-                    <input type="text" class="chat-input" id="chatInput" placeholder="输入您的租房需求...">
-                    <button class="send-btn" id="sendBtn">发送</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <button class="chat-icon" id="chatIcon" type="button" aria-label="展开租房咨询" aria-expanded="true">
+        <i class="fas fa-comment-dots" aria-hidden="true"></i><span>返回租房咨询</span>
+    </button>
 
     <script>
         // 鍏ㄥ眬鍙橀噺
@@ -776,6 +2175,8 @@
         const chatIcon = document.getElementById('chatIcon');
         const chatContainer = document.getElementById('chatContainer');
         const closeChat = document.getElementById('closeChat');
+        const headerChatBtn = document.getElementById('headerChatBtn');
+        const searchForm = document.getElementById('searchForm');
         const chatMessages = document.getElementById('chatMessages');
         const chatInput = document.getElementById('chatInput');
         const sendBtn = document.getElementById('sendBtn');
@@ -837,9 +2238,10 @@
         function renderConversationList() {
             conversationList.innerHTML = '';
             for (const conversation of conversations) {
-                const item = document.createElement('button');
+                const item = document.createElement('div');
                 item.className = `conversation-item${conversation.id === currentConversationId ? ' active' : ''}`;
-                item.type = 'button';
+                item.setAttribute('role', 'button');
+                item.tabIndex = 0;
                 item.dataset.id = conversation.id;
 
                 const title = document.createElement('span');
@@ -850,12 +2252,19 @@
                 del.className = 'delete-conversation';
                 del.type = 'button';
                 del.title = '删除对话';
+                del.setAttribute('aria-label', '删除对话');
                 del.innerHTML = '<i class="fas fa-trash"></i>';
                 del.addEventListener('click', (event) => deleteConversation(conversation.id, event));
 
                 item.appendChild(title);
                 item.appendChild(del);
                 item.addEventListener('click', () => selectConversation(conversation.id));
+                item.addEventListener('keydown', (event) => {
+                    if (event.target === item && (event.key === 'Enter' || event.key === ' ')) {
+                        event.preventDefault();
+                        selectConversation(conversation.id);
+                    }
+                });
                 conversationList.appendChild(item);
             }
         }
@@ -945,29 +2354,65 @@
             renderConversationList();
         }
 
-        // 鎵撳紑鑱婂ぉ绐楀彛
-        chatIcon.addEventListener('click', async () => {
-            if (!isChatOpen) {
-                chatContainer.style.display = 'flex';
-                isChatOpen = true;
+        function openChat() {
+            chatContainer.style.display = 'flex';
+            chatIcon.style.display = 'none';
+            isChatOpen = true;
+            chatIcon.setAttribute('aria-expanded', 'true');
+            requestAnimationFrame(() => {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                chatInput.focus();
+            });
+        }
 
-                // 濡傛灉娌℃湁浼氳瘽锛屽垯鍒涘缓涓€涓?
-                if (!currentThreadId) {
-                    await createThread();
-                }
+        function closeChatWindow() {
+            chatContainer.style.display = 'none';
+            chatIcon.style.display = 'inline-flex';
+            isChatOpen = false;
+            chatIcon.setAttribute('aria-expanded', 'false');
+        }
 
-                // 婊氬姩鍒板簳閮?
-                setTimeout(() => {
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }, 100);
+        function submitPrompt(prompt) {
+            openChat();
+            chatInput.value = prompt;
+            sendMessage();
+        }
+
+        chatIcon.addEventListener('click', openChat);
+        headerChatBtn.addEventListener('click', openChat);
+
+        searchForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const location = document.getElementById('searchLocation').value.trim();
+            const budget = document.getElementById('searchBudget').value.trim();
+            const layout = document.getElementById('searchLayout').value.trim();
+            const conditions = [];
+
+            if (location) conditions.push(`城市或区域：${location}`);
+            if (budget) conditions.push(`预算：${budget}`);
+            if (layout) conditions.push(`户型或租住方式：${layout}`);
+
+            if (conditions.length === 0) {
+                openChat();
+                return;
             }
+
+            submitPrompt(`我想租房，${conditions.join('；')}。请按价格从低到高推荐 5 套房源。`);
+        });
+
+        document.querySelectorAll('.quick-search').forEach((button) => {
+            button.addEventListener('click', () => submitPrompt(button.dataset.prompt));
+        });
+
+        document.querySelectorAll('.city-choice').forEach((button) => {
+            button.addEventListener('click', () => {
+                document.getElementById('searchLocation').value = button.dataset.city;
+                document.getElementById('searchLocation').focus();
+            });
         });
 
         // 鍏抽棴鑱婂ぉ绐楀彛
-        closeChat.addEventListener('click', () => {
-            chatContainer.style.display = 'none';
-            isChatOpen = false;
-        });
+        closeChat.addEventListener('click', closeChatWindow);
 
         // Send message
         sendBtn.addEventListener('click', sendMessage);
@@ -1543,6 +2988,7 @@
                 let hasThinkingDetails = false;
                 let aiMessageContent = '';
                 let startAI = false;
+                let receivedStreamError = false;
                 let currentAnswerElement = turn.answerElement;
                 let streamAnswerElement = null;
                 const sseParser = createSseParser(handleSseEvent);
@@ -1612,7 +3058,10 @@
                     try {
                         const data = JSON.parse(dataStr);
 
-                        if (currentType.startsWith('updates')) {
+                        if (currentType === 'error') {
+                            receivedStreamError = true;
+                            appendAnswerBlock('本次查询未能完成，请稍后重试。');
+                        } else if (currentType.startsWith('updates')) {
                                     if (Object.values(data).some(v => v && typeof v === 'object' && 'messages' in v)) {
                                         if (currentType === 'updates') {
                                             return;
@@ -1675,6 +3124,10 @@
                                 }
                     } catch (e) {
                         console.error('瑙ｆ瀽JSON澶辫触:', e, dataStr);
+                        if (currentType === 'error') {
+                            receivedStreamError = true;
+                            appendAnswerBlock('本次查询未能完成，请稍后重试。');
+                        }
                     }
                 }
 
@@ -1686,6 +3139,10 @@
                         break;
                     }
                     sseParser.push(decoder.decode(value, { stream: true }));
+                    if (receivedStreamError) {
+                        await reader.cancel();
+                        break;
+                    }
                 }
             } catch (error) {
                 console.error('鍙戦€佹秷鎭け璐?', error);
@@ -1708,12 +3165,9 @@
 
         window.addEventListener('load', () => {
             initializeConversationStore();
-            // 寤惰繜鍒涘缓浼氳瘽锛岄伩鍏嶉〉闈㈠姞杞芥椂绔嬪嵆鍙戣捣璇锋眰
-            setTimeout(() => {
-                if (!currentThreadId) {
-                    createThread();
-                }
-            }, 1000);
+            chatContainer.style.display = 'flex';
+            chatIcon.style.display = 'none';
+            isChatOpen = true;
         });
     </script>
 </body>

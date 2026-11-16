@@ -25,5 +25,9 @@ services:
       house-mysql:
         condition: service_healthy
 
+  house-frontend:
+    volumes:
+      - ./static:/usr/share/nginx/html/static:ro
+
 volumes:
   house_mysql_data:

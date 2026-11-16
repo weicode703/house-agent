@@ -21,7 +21,8 @@ docker compose ps
 
 echo "====== 健康检查 ======"
 sleep 8
-curl -fsS http://127.0.0.1:8001/docs >/dev/null && echo "后端 OK: http://服务器IP:8001/docs"
+curl -fsS http://127.0.0.1:8001/docs >/dev/null && echo "后端 OK（仅服务器本机）: http://127.0.0.1:8001/docs"
+curl -fsS http://127.0.0.1:5500/api/docs >/dev/null && echo "API 代理 OK: http://服务器IP:5500/api/docs"
 curl -fsS http://127.0.0.1:5500/static/house.html >/dev/null && echo "前端 OK: http://服务器IP:5500/static/house.html"
 
 echo "====== 完成 ======"
